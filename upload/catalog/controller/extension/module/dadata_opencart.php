@@ -25,12 +25,17 @@ class ControllerExtensionModuleDadataOpencart extends Controller
             $this->document->addScript('//cdn.jsdelivr.net/npm/suggestions-jquery@20.3.0/dist/js/jquery.suggestions.min.js');
         }
         $file_name = str_replace('/', '_', self::$ROUTE);
-        if (file_exists(DIR_APPLICATION . self::APP_PATH . $file_name . '.js')) {
-            $this->document->addScript('catalog/' . self::APP_PATH . $file_name . '.js');
-        }
         if (file_exists(DIR_APPLICATION . self::APP_PATH . $file_name . '.css')) {
             $this->document->addStyle('catalog/' . self::APP_PATH . $file_name . '.css');
         }
-        return '';
+        if (file_exists(DIR_APPLICATION . self::APP_PATH . $file_name . '.js')) {
+            $this->document->addScript('catalog/' . self::APP_PATH . $file_name . '.js');
+        } elseif (self::$STATUS AND $this->config->get(self::$MODULE_NAME . '_route') AND file_exists(DIR_APPLICATION . self::APP_PATH . '_default_.js')) {
+	    $script = file_get_contents(DIR_APPLICATION . self::APP_PATH . '_default_.js');
+	    return <<<EOF
+<link href="//cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" onload="if(this.media=='not all')this.media='screen';"/>
+<script>$script</script>
+EOF;
+	}
     }
 }
